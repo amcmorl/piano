@@ -15,7 +15,7 @@ dev = ''
 if sys.platform == 'linux2':
     dev = '/dev/ttyACM'
 elif sys.platform == 'win32':
-    dev = 'COM3'
+    dev = 'COM4'
 else:
     dev = 'unknown'
     raise ValueError('platform %s not known' % (sys.platform))
@@ -105,13 +105,15 @@ def fix_bitpat(inpat):
     to convention used in arduino
 
     datafiles meaning arduino
-    0          none    0
-    1          center (1 << 5) == 16
-    4          left   4     or right?
-    8          right  4 ==  8     or left?
-    12         both   (1 << 4) & (1 << 8) == 272
+    0          none       0
+    1          center     1 << 5 == 32
+    2          left mid   0b10 == 2
+    4          left idx   0b00100 == 4
+    8          right idx  0b01000 == 8
+    12         both       0b01100 == 12
+    16         right mid  0b10000 == 16
     '''
-    return (0b1 & inpat) << 5 | (inpat & 0b1100)
+    return (0b1 & inpat) << 5 | (inpat & 0b11110)
     
 def run(file_name, ser=None):
     if ser == None:

@@ -1,0 +1,80 @@
+; *****************************************************************************************************
+; Freetronics USB Device Driver INF file
+;
+;
+; For instructions, see http://www.freetronics.com/pages/installing-the-usb-driver-file-for-windows
+;
+; *****************************************************************************************************
+
+[Version]
+Signature="$Windows NT$"
+Class=Ports
+ClassGuid={4D36E978-E325-11CE-BFC1-08002BE10318}
+Provider=%MFGNAME%
+CatalogFile=FreetronicsUSB.cat
+DriverVer=06/06/2014,2.1.0.1
+
+[Manufacturer]
+%MFGNAME%=DeviceList, NTamd64
+
+[DefaultInstall]
+CopyINF=FreetronicsUSB_v2_1.inf
+
+; x86
+
+[DDInstall.NT]
+include=mdmcpq.inf,usb.inf
+CopyFiles=FakeModemCopyFileSection
+AddReg=SerialPortAddReg
+
+[DDInstall.NT.Services]
+AddService=usbser, 0x00000002, LowerFilter_Service_Inst
+
+; amd64
+
+[DDInstall.NTamd64]
+include=mdmcpq.inf,usb.inf
+CopyFiles=FakeModemCopyFileSection
+AddReg=SerialPortAddReg
+
+[DDInstall.NTamd64.Services]
+include=mdmcpq.inf
+AddService=usbser, 0x00000002, LowerFilter_Service_Inst
+
+; Generic sections (referenced from DDInstall)
+
+[SerialPortAddReg]
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,usbser.sys
+HKR,,EnumPropPages32,,"MsPorts.dll,SerialPortPropPageProvider"
+
+;  Vendor and Product ID Definitions "models" sections
+[DeviceList]
+%freetronics.8u2%=DDInstall, USB\VID_20A0&PID_4150
+%leostick.v1_bootloader%=DDInstall, USB\VID_20A0&PID_4151
+%leostick.bootloader%=DDInstall, USB\VID_26BA&PID_0002
+%leostick.sketch%=DDInstall, USB\VID_26BA&PID_8002&MI_00
+%freetronics.16u2%=DDInstall, USB\VID_26BA&PID_0003
+
+[DeviceList.NTamd64]
+%freetronics.8u2%=DDInstall, USB\VID_20A0&PID_4150
+%leostick.v1_bootloader%=DDInstall, USB\VID_20A0&PID_4151
+%leostick.bootloader%=DDInstall, USB\VID_26BA&PID_0002
+%leostick.sketch%=DDInstall, USB\VID_26BA&PID_8002&MI_00
+%freetronics.16u2%=DDInstall, USB\VID_26BA&PID_0003
+
+;------------------------------------------------------------------------------
+;  String Definitions
+;------------------------------------------------------------------------------
+;Modify these strings to customize your device
+;------------------------------------------------------------------------------
+[Strings]
+MFGNAME="Freetronics (www.freetronics.com)"
+INSTDISK="Freetronics USB Driver Installer"
+DESCRIPTION="Freetronics USB Serial Device Driver"
+freetronics.8u2="Freetronics 8U2 USB"
+leostick.v1_bootloader="Freetronics LeoStick Loader v1"
+leostick.bootloader="Freetronics LeoStick Loader v2"
+leostick.sketch="Freetronics LeoStick"
+freetronics.16u2="Freetronics 16U2 USB"
+SERVICE="USB Serial Port Driver"
