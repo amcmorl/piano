@@ -6,6 +6,8 @@
 #define PIN_RI 11
 #define PIN_LI 12
 #define PIN_LM  9
+#define PIN_T1  7
+#define PIN_T2  6
 
 int state = 0;
 byte out = 0;
@@ -44,6 +46,8 @@ void setup() {
   pinMode(PIN_LI, OUTPUT);
   pinMode(PIN_RI, OUTPUT);
   pinMode(PIN_RM, OUTPUT);
+  pinMode(PIN_T1, OUTPUT);
+  pinMode(PIN_T2, OUTPUT);
   
   Serial.begin(115200);
 }
@@ -62,9 +66,10 @@ ISR(TIMER1_COMPA_vect) {
       }
       break;
     case 2:
-      PORTB  = nxt_port & B00111110; // set port
-      TCCR1A = 0;                    // immediately reset timer 
-      OCR1A  = nxt_time;             // set next timeout
+      PORTD  = (nxt_port >> 8) & B11000000; // set port A for trig pins
+      PORTB  = nxt_port & B00111110;        // set port B for LED pins
+      TCCR1A = 0;                           // immediately reset timer 
+      OCR1A  = nxt_time;                    // set next timeout
       state  = 0;
       timeout_okay = false;
       break;
@@ -94,6 +99,7 @@ void loop() {
       // error
       Serial.write("s5");
       state = 0;
+      PORTD = 0;
       PORTB = 0;
       timeout_okay = true;
       break;

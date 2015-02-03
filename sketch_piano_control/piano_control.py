@@ -30,6 +30,8 @@ LI = 0b00000100
 RI = 0b00001000
 RM = 0b00010000
 CT = 0b00100000
+T1 = 0b1000000000000000 # (on port D)
+T2 = 0b0100000000000000 # ('')
 
 egfile = '../ajcm_test.txt'
 
@@ -112,8 +114,9 @@ def fix_bitpat(inpat):
     8          right idx  0b01000 == 8
     12         both       0b01100 == 12
     16         right mid  0b10000 == 16
+    2^14-2^15  trig 1 and 2
     '''
-    return (0b1 & inpat) << 5 | (inpat & 0b11110)
+    return (0b1 & inpat) << 5 | (inpat & 0b1100000011110)
     
 def run(file_name, ser=None):
     if ser == None:
