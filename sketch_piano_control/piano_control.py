@@ -72,7 +72,8 @@ def send_port(bitpat, ser, pad=True):
     '''
     'b' is the handshake code for the bitpat
     '''
-    outstr = chr(bitpat) + ('abcd' if pad else '')
+    outstr = chr(bitpat >> 8) + chr(bitpat & 0b11111111) \
+        + ('abcd' if pad else '')
     ser.write(outstr)
 
 def get_timer_counts(target_time):
@@ -116,7 +117,7 @@ def fix_bitpat(inpat):
     16         right mid  0b10000 == 16
     2^14-2^15  trig 1 and 2
     '''
-    return (0b1 & inpat) << 5 | (inpat & 0b1100000011110)
+    return (0b1 & inpat) << 5 | (inpat & 0b1100000000011110)
     
 def run(file_name, ser=None):
     if ser == None:

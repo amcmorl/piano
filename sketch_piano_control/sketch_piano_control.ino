@@ -12,8 +12,13 @@
 int state = 0;
 byte out = 0;
 int nxt_time = 15624;
-int nxt_port = 0;
+unsigned int nxt_port = 0;
 boolean timeout_okay = true;
+
+union UIInp {
+  unsigned int value;
+  char bytes[2];
+};
 
 union ULInp {
     unsigned long value;
@@ -66,8 +71,10 @@ ISR(TIMER1_COMPA_vect) {
       }
       break;
     case 2:
-      PORTD  = (nxt_port >> 8) & B11000000; // set port A for trig pins
-      PORTB  = nxt_port & B00111110;        // set port B for LED pins
+      //PORTD  = (nxt_port >> 8) & B11000000; // set port A for trig pins
+      //PORTB  = nxt_port & B00111110;        // set port B for LED pins
+      PORTD  = nxt_port & B11000000;
+      PORTB  = (nxt_port >> 8) & B00111110;
       TCCR1A = 0;                           // immediately reset timer 
       OCR1A  = nxt_time;                    // set next timeout
       state  = 0;
@@ -78,6 +85,7 @@ ISR(TIMER1_COMPA_vect) {
 
 void loop() {
   union ULInp time;
+  union UIInp bitpat;
   
   switch (state) {
     case 0:
@@ -88,8 +96,9 @@ void loop() {
     case 1:
       // requested entry, waiting for reply
       if (Serial.available() > 0) {
-        // always read 5 bytes per cycle
-        nxt_port = Serial.read();            // 1
+        // always read 6 bytes per cycle
+        Serial.readBytes(bitpat.bytes, 2);   // 2
+        nxt_port = bitpat.value;
         Serial.readBytes(time.bytes, 4);     // 4
         nxt_time = time.value;
         state = 2;

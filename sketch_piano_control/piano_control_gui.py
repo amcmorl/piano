@@ -74,8 +74,10 @@ class PianoControl(QtGui.QWidget):
             if self.do_stop:
                 self.do_stop = False
                 break
+            sys.stdout.write(bin(bitpat) + ' ')
             bitpat = pc.fix_bitpat(bitpat)
             sys.stdout.write("|")
+            sys.stdout.write(' ' + bin(bitpat) + '\n')
             pc.send_command(bitpat, target_time, ser)
             sys.stdout.flush()
             while ser.inWaiting() == 0:
